@@ -3,5 +3,9 @@ date  >> /var/log/cron.log
 DATA=/var/data
 timestamp=$(find ${DATA}/vsftpd -type f -printf '%T+ %p\n' | sort | head -n 1)
 folder=$(echo ${timestamp} | sed 's/\([[:digit:]]*\)-\([[:digit:]]*\)-\([[:digit:]]*\)+\([[:digit:]]*\):\([[:digit:]]*\):.*/\1\/\2\/\3\/\4\5/g')
-mkdir -p ${DATA}/${folder}
-find ${DATA}/vsftpd -mmin +15 -type f -exec mv {} ${DATA}/${folder}/ \;
+subfolders=${DATA}/vsftpd/*
+for subfolder in ${subfolders}
+do
+mkdir -p ${DATA}/$(basename ${subfolder})/${folder}
+find ${subfolder} -mmin +15 -type f -exec mv {} ${DATA}/$(basename ${subfolder})/${folder}/ \;
+done
